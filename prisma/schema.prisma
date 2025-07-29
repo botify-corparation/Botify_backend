@@ -1,0 +1,194 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ENUM tiplar
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum BotStatus {
+  PENDING
+  ACTIVE
+  INACTIVE
+  EXPIRED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum WebhookStatus {
+  SUCCESS
+  FAILED
+  PENDING
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  fullName  String
+  email     String   @unique
+  phone     String   @unique
+  avatar    String?
+  password  String?
+  role      UserRole @default(USER)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  sessions     UserSession[]
+  profile      UserProfile?
+  payments     Payment[]
+  botTokenLogs BotTokenLog[]
+  userBots     UserBot[]
+  plans        PaymentPlan[]
+  OAuthAccount OAuthAccount[]
+}
+
+model OAuthAccount {
+  id             Int     @id @default(autoincrement())
+  user           User    @relation(fields: [userId], references: [id])
+  userId         Int
+  provider       String
+  providerUserId String
+  accessToken    String?
+  refreshToken   String?
+
+  @@unique([provider, providerUserId])
+  @@index([provider, providerUserId])
+}
+
+model UserProfile {
+  id         Int       @id @default(autoincrement())
+  userId     Int       @unique
+  isActive   Boolean   @default(true)
+  status     BotStatus @default(PENDING)
+  checkedAt  DateTime  @default(now())
+  receivedAt DateTime  @default(now())
+
+  user       User      @relation(fields: [userId], references: [id])
+  Category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId Int?
+
+  @@index([userId])
+  @@index([categoryId])
+}
+
+model UserSession {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  userAgent String
+  ipAddress String
+  location  String?
+  isValid   Boolean  @default(true)
+  checkedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model Category {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  botToken    String?
+  botUsername String?
+  isActive    Boolean   @default(true)
+  startedAt   DateTime  @default(now())
+  expiresAt   DateTime?
+
+  userBots UserBot[]
+  profiles UserProfile[]
+}
+
+model UserBot {
+  id         Int       @id @default(autoincrement())
+  userId     Int
+  categoryId Int
+  botToken   String    @unique
+  isActive   Boolean   @default(true)
+  startedAt  DateTime  @default(now())
+  expiresAt  DateTime?
+  status     BotStatus @default(PENDING)
+
+  user     User      @relation(fields: [userId], references: [id])
+  category Category  @relation(fields: [categoryId], references: [id])
+  payments Payment[]
+
+  @@index([userId])
+  @@index([categoryId])
+}
+
+model PaymentPlan {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  name      String
+  amount    Decimal
+  duration  Int
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  user     User?     @relation(fields: [userId], references: [id])
+  payments Payment[]
+}
+
+model Payment {
+  id             Int           @id @default(autoincrement())
+  userId         Int
+  userBotId      Int
+  planId         Int
+  amount         Decimal
+  status         PaymentStatus @default(PENDING)
+  paymentGateway String        @db.VarChar(100)
+  transactionId  String        @unique @db.VarChar(255)
+  paidAt         DateTime?
+  expiresAt      DateTime
+  createdAt      DateTime      @default(now())
+  verifiedAt     DateTime?
+
+  user     User         @relation(fields: [userId], references: [id])
+  bot      UserBot      @relation(fields: [userBotId], references: [id])
+  plan     PaymentPlan  @relation(fields: [planId], references: [id])
+  webhooks WebhookLog[]
+
+  @@index([userId])
+  @@index([userBotId])
+  @@index([planId])
+}
+
+model BotTokenLog {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  botToken      String   @db.VarChar(255)
+  isValid       Boolean
+  checkedAt     DateTime @default(now())
+  notes         String?
+  invalidReason String?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model WebhookLog {
+  id           Int            @id @default(autoincrement())
+  paymentId    Int
+  gatewayName  String         @db.VarChar(100)
+  payload      Json
+  statusCode   Int
+  status       WebhookStatus?
+  errorCode    String?
+  errorMessage String?
+  receivedAt   DateTime       @default(now())
+
+  payment Payment @relation(fields: [paymentId], references: [id])
+
+  @@index([paymentId])
+}
