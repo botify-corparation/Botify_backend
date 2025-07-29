@@ -20,7 +20,7 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 
-@ApiTags('Auth') // Swagger guruh nomi
+@ApiTags('Auth') 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
@@ -36,9 +36,11 @@ export class AuthController {
   @ApiOperation({ summary: 'Google orqali muvaffaqiyatli qaytish' })
   @ApiResponse({ status: 200, description: 'Google orqali login bo‘ldi' })
   @ApiResponse({ status: 401, description: 'Google auth xatoligi' })
-  async googleAuthRedirect(@Req() req) {
+  async googleAuthRedirect(@Req() req:Request) {
     try {
-      const { profile, accessToken, refreshToken } = req.user;
+      const {profile,access_token} = req["user"];
+
+      
 
       const userAgent = req.headers['user-agent'] || 'unknown';
       const ip =
@@ -48,8 +50,7 @@ export class AuthController {
 
       return await this.authService.validateOAuthLogin(
         profile,
-        accessToken,
-        refreshToken,
+        access_token,
         userAgent,
         ip.toString()
       );

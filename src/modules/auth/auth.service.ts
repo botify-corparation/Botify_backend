@@ -5,6 +5,7 @@ import { RegisterAuthDto } from './dto/create-auth.dto';
 import { LoginAuthDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
 import { RedisService } from 'src/core/config/redis/redis.service';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -13,22 +14,28 @@ export class AuthService {
     private redisService: RedisService,
   ) { }
 
-  async signJwt(user: { id: number; email: string; role: string, agent: string, ip: string }): Promise<string> {
+  async signJwt(user: {
+    id: number;
+    email: string;
+    role: string;
+    agent: string;
+    ip: string;
+  }): Promise<string> {
     const payload = {
       id: user.id,
       email: user.email,
       role: user.role,
-      agent: user.agent, 
+      agent: user.agent,
       ip: user.ip,
     };
     return this.jwtService.signAsync(payload);
   }
+
   async validateOAuthLogin(
     profile: any,
     accessToken: string,
-    refreshToken: string,
     userAgent: string,
-    ipAddress: string
+    ipAddress: string,
   ) {
     const { id: googleId, name, emails, photos } = profile;
     const email = emails?.[0]?.value;
@@ -54,6 +61,7 @@ export class AuthService {
           userId: user.id,
         },
       });
+
       await this.prisma.userSession.create({
         data: {
           userId: user.id,
@@ -74,17 +82,16 @@ export class AuthService {
       },
       update: {
         accessToken,
-        refreshToken,
       },
       create: {
         userId: user.id,
         provider: 'google',
         providerUserId: googleId,
         accessToken,
-        refreshToken,
       },
     });
-    const seasion = await this.prisma.userSession.create({
+
+    const session = await this.prisma.userSession.create({
       data: {
         userId: user.id,
         userAgent,
@@ -94,9 +101,14 @@ export class AuthService {
       },
     });
 
+    const token = await this.signJwt({
+      id: user.id,
+      role: user.role,
+      email: user.email,
+      agent: session.userAgent,
+      ip: session.ipAddress,
+    });
 
-
-    const token = await this.signJwt({ ...user, agent: seasion.userAgent, ip: seasion.ipAddress });
     const { password, ...safeUser } = user;
 
     return {
@@ -105,18 +117,18 @@ export class AuthService {
       data: safeUser,
     };
   }
-  async register(payload: RegisterAuthDto, userAgent: string, ipAddress: string) {
-    const { email, fullName, password, phone } = payload;
 
-    const existingUser = await this.prisma.user.findUnique({
-      where: { email },
-    });
+  async register(payload: RegisterAuthDto, userAgent: string, ipAddress: string) {
+    const { email, fullName, password, phone, otp } = payload;
+
+    const existingUser = await this.prisma.user.findUnique({ where: { email } });
 
     if (existingUser) {
       throw new Error('User with this email already exists');
     }
+
     const existOtp = await this.redisService.get(`otp:${email}`);
-    if (!existOtp || existOtp !== payload.otp) {
+    if (!existOtp || existOtp !== otp) {
       throw new ConflictException('Invalid or expired OTP code');
     }
 
@@ -148,10 +160,15 @@ export class AuthService {
         isValid: true,
       },
     });
-    const token = await this.signJwt({ ...user, agent: userAgent, ip: ipAddress });
-    if (!token) {
-      throw new Error('Failed to create JWT token');
-    }
+
+    const token = await this.signJwt({
+      id: user.id,
+      role: user.role,
+      email: user.email,
+      agent: userAgent,
+      ip: ipAddress,
+    });
+
     const { password: _, ...safeUser } = user;
     return {
       message: 'User successfully registered and session created',
@@ -163,9 +180,7 @@ export class AuthService {
   async login(payload: LoginAuthDto, userAgent: string, ipAddress: string) {
     const { email, password } = payload;
 
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-    });
+    const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) {
       throw new Error('User not found');
     }
@@ -185,19 +200,20 @@ export class AuthService {
       },
     });
 
+    const token = await this.signJwt({
+      id: user.id,
+      role: user.role,
+      email: user.email,
+      agent: session.userAgent,
+      ip: session.ipAddress,
+    });
 
-    const token = await this.signJwt({ ...user, agent: session.userAgent, ip: session.ipAddress });
     const { password: _, ...safeUser } = user;
-    if (!token) {
-      throw new Error('Failed to create JWT token');
-    }
+
     return {
       message: 'Login successful',
       access_token: token,
       data: safeUser,
     };
   }
-
-
-
 }
