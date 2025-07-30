@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class GuardsService implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor(private jwtService: JwtService) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -22,8 +22,11 @@ export class GuardsService implements CanActivate {
     let payload: any;
 
     try {
-      payload = await this.jwtService.verifyAsync(token);
+      const secret = process.env.JWT_SECRET
+      payload = await this.jwtService.verifyAsync(token, { secret: secret });
     } catch (err) {
+      console.log(err);
+
       throw new UnauthorizedException('Token notogri yoki muddati tugagan');
     }
 

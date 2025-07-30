@@ -5,11 +5,15 @@ import { AuthModule } from './modules/auth/auth.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { MailesModule } from './modules/auth/otp/Mailer.module';
 import { CommonModule } from './common/common.module';
+import { SeadersModule } from './modules/seaders/seaders.module';
+import { UsersModule } from './modules/users/users.module';
+import { UploadModule } from './modules/upload/upload.module';
+import { ProofileModule } from './modules/proofile/proofile.module';
 
 @Module({
   imports: [CoreModule, ConfigModule.forRoot({
     isGlobal: true
-  }), MailesModule, AuthModule, CommonModule],
+  }), MailesModule, AuthModule, CommonModule, SeadersModule, UsersModule, UploadModule, ProofileModule],
   controllers: [],
   providers: [],
 })

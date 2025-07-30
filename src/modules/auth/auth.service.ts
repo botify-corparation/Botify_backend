@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/core/config/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterAuthDto } from './dto/create-auth.dto';
@@ -124,7 +124,7 @@ export class AuthService {
     const existingUser = await this.prisma.user.findUnique({ where: { email } });
 
     if (existingUser) {
-      throw new Error('User with this email already exists');
+      throw new ConflictException('User with this email already exists');
     }
 
     const existOtp = await this.redisService.get(`otp:${email}`);
@@ -182,12 +182,12 @@ export class AuthService {
 
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, user.password!);
     if (!isPasswordValid) {
-      throw new Error('Invalid email or password');
+      throw new ConflictException('Invalid email or password');
     }
 
     const session = await this.prisma.userSession.create({

@@ -28,8 +28,8 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Accept, Authorization',
   });
-  console.log('Swagger hujjatlari: http://localhost:3000/docs');
-
+  
   await app.listen(process.env.PORT ?? 3000);
+  console.log('Swagger hujjatlari: http://localhost:3000/docs');
 }
 bootstrap();
