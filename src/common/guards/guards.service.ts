@@ -32,6 +32,8 @@ export class GuardsService implements CanActivate {
 
     const currentAgent = request.headers['user-agent'] || 'unknown';
     const currentIp = request.headers['x-forwarded-for'] || request.socket.remoteAddress;
+    console.log('Token ichidagi agent:', payload.agent)
+    console.log('Request agent:', request.headers['user-agent'])
 
     if (payload.agent !== currentAgent || payload.ip !== currentIp) {
       throw new UnauthorizedException('Qurilma yoki IP mos emas');

@@ -160,6 +160,7 @@ export class AuthService {
         isValid: true,
       },
     });
+    
 
     const token = await this.signJwt({
       id: user.id,
@@ -168,6 +169,7 @@ export class AuthService {
       agent: userAgent,
       ip: ipAddress,
     });
+
 
     const { password: _, ...safeUser } = user;
     return {

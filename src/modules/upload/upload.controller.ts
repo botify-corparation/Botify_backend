@@ -28,8 +28,8 @@ import {
 export class UploadController {
     constructor(private readonly uploadService: UploadService) { }
 
-    @Post()
     @UseGuards(GuardsService, RoleGuard)
+    @Post()
     @UseInterceptors(
         FileInterceptor('file', {
             storage: diskStorage({
