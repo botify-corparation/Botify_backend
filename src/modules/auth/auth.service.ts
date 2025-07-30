@@ -19,17 +19,18 @@ export class AuthService {
     email: string;
     role: string;
     agent: string;
-    ip: string;
+    sessionId: number;
   }): Promise<string> {
     const payload = {
       id: user.id,
       email: user.email,
       role: user.role,
       agent: user.agent,
-      ip: user.ip,
+      sessionId: user.sessionId,
     };
     return this.jwtService.signAsync(payload);
   }
+
 
   async validateOAuthLogin(
     profile: any,
@@ -106,8 +107,9 @@ export class AuthService {
       role: user.role,
       email: user.email,
       agent: session.userAgent,
-      ip: session.ipAddress,
+      sessionId: session.id,
     });
+
 
     const { password, ...safeUser } = user;
 
@@ -151,7 +153,7 @@ export class AuthService {
       },
     });
 
-    await this.prisma.userSession.create({
+    const session = await this.prisma.userSession.create({
       data: {
         userId: user.id,
         userAgent,
@@ -160,15 +162,15 @@ export class AuthService {
         isValid: true,
       },
     });
-    
 
     const token = await this.signJwt({
       id: user.id,
       role: user.role,
       email: user.email,
-      agent: userAgent,
-      ip: ipAddress,
+      agent: session.userAgent,
+      sessionId: session.id,
     });
+
 
 
     const { password: _, ...safeUser } = user;
@@ -206,8 +208,8 @@ export class AuthService {
       id: user.id,
       role: user.role,
       email: user.email,
-      agent: userAgent,
-      ip: ipAddress,
+      agent: session.userAgent,
+      sessionId: session.id,
     });
 
     const { password: _, ...safeUser } = user;
