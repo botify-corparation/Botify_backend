@@ -204,8 +204,8 @@ export class AuthService {
       id: user.id,
       role: user.role,
       email: user.email,
-      agent: session.userAgent,
-      ip: session.ipAddress,
+      agent: userAgent,
+      ip: ipAddress,
     });
 
     const { password: _, ...safeUser } = user;
