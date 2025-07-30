@@ -132,7 +132,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new Error('User topilmadi');
+      throw new NotFoundException('User topilmadi');
     }
 
     return { data: user };
@@ -159,7 +159,7 @@ export class UsersService {
       }
     });
 
-    if (!me) throw new Error('User topilmadi');
+    if (!me) throw new NotFoundException('User topilmadi');
 
     return { data: me };
   }
