@@ -24,19 +24,18 @@ export class GuardsService implements CanActivate {
     try {
       const secret = process.env.JWT_SECRET
       payload = await this.jwtService.verifyAsync(token, { secret: secret });
+      
     } catch (err) {
-      console.log(err);
+
 
       throw new UnauthorizedException('Token notogri yoki muddati tugagan');
     }
 
     const currentAgent = request.headers['user-agent'] || 'unknown';
     const currentIp = request.headers['x-forwarded-for'] || request.socket.remoteAddress;
-    console.log('Token ichidagi agent:', payload.agent)
-    console.log('Request agent:', request.headers['user-agent'])
 
-    if (payload.agent !== currentAgent || payload.ip !== currentIp) {
-      throw new UnauthorizedException('Qurilma yoki IP mos emas');
+    if (payload.agent !== currentAgent) {
+      throw new UnauthorizedException('Qurilma mos emas');
     }
 
     request.user = payload;

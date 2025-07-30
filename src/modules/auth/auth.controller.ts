@@ -20,7 +20,7 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 
-@ApiTags('Auth') 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
@@ -36,11 +36,11 @@ export class AuthController {
   @ApiOperation({ summary: 'Google orqali muvaffaqiyatli qaytish' })
   @ApiResponse({ status: 200, description: 'Google orqali login bo‘ldi' })
   @ApiResponse({ status: 401, description: 'Google auth xatoligi' })
-  async googleAuthRedirect(@Req() req:Request) {
+  async googleAuthRedirect(@Req() req: Request) {
     try {
-      const {profile,access_token} = req["user"];
+      const { profile, access_token } = req["user"];
 
-      
+
 
       const userAgent = req.headers['user-agent'] || 'unknown';
       const ip =
@@ -86,7 +86,7 @@ export class AuthController {
   ) {
     const userAgent = req.headers['user-agent']?.toString() || 'unknown';
     const ip = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'unknown';
-
+    console.log(userAgent, ip);
     return this.authService.login(payload, userAgent, ip);
   }
 }
