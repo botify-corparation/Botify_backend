@@ -23,8 +23,5 @@ export class UpdateProfileDto {
     @IsDateString()
     checkedAt?: string;
 
-    @ApiPropertyOptional({ description: 'Kategoriya ID', example: 3 })
-    @IsOptional()
-    @IsInt()
-    categoryId?: number;
+   
 }

@@ -53,14 +53,7 @@ export class ProofileService {
               createdAt: true,
             },
           },
-          Category: {
-            select: {
-              id: true,
-              name: true,
-              botUsername: true,
-              isActive: true,
-            },
-          },
+          
         },
       }),
       this.prisma.userProfile.count({ where }),
@@ -77,7 +70,6 @@ export class ProofileService {
     const profile = await this.prisma.userProfile.findUnique({
       where: { id },
       include: {
-        Category: { select: { id: true, name: true, isActive: true, expiresAt: true, startedAt: true, userBots: true } },
         user: { select: { id: true, fullName: true, avatar: true, email: true, payments: true } }
       }
     })
@@ -95,7 +87,6 @@ export class ProofileService {
     const existsProfile = await this.prisma.userProfile.findUnique({
       where: { userId },
       include: {
-        Category: { select: { id: true, name: true, isActive: true, expiresAt: true, startedAt: true, userBots: true } },
         user: { select: { id: true, fullName: true, avatar: true, email: true, payments: true } }
       }
     })
@@ -110,14 +101,10 @@ export class ProofileService {
     const existingUser = await this.prisma.user.findUnique({ where: { id: userId } })
     if (!existingUser) throw new NotFoundException('user not found')
 
-    const existsCategory = await this.prisma.category.findUnique({ where: { id: payload.categoryId } })
-    if (!existsCategory) throw new NotFoundException('this category not found')
-
     const updateProfile = await this.prisma.userProfile.update({
       where: { userId },
       data: {
         status: payload.status,
-        categoryId: payload.categoryId,
         checkedAt: payload.checkedAt,
         isActive: payload.isActive,
         receivedAt: payload.receivedAt,
@@ -144,12 +131,8 @@ export class ProofileService {
     const existingUser = await this.prisma.user.findUnique({ where: { id: userId } })
     if (!existingUser) throw new NotFoundException('user not found')
 
-    const existsCategory = await this.prisma.category.findUnique({ where: { id: payload.categoryId } })
-    if (!existsCategory) throw new NotFoundException('this category not found')
-
     const createProfile = await this.prisma.userProfile.create({
       data: {
-        categoryId: payload.categoryId,
         userId: userId,
         checkedAt: payload.checkedAt,
         isActive: payload.isActive,

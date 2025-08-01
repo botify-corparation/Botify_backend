@@ -25,6 +25,12 @@ enum PaymentStatus {
   FAILED
 }
 
+enum PaymentGateway {
+  PAYME
+  CLICK
+  CASH
+}
+
 enum WebhookStatus {
   SUCCESS
   FAILED
@@ -49,6 +55,7 @@ model User {
   userBots     UserBot[]
   plans        PaymentPlan[]
   OAuthAccount OAuthAccount[]
+  Transaction  Transaction[]
 
   @@map("users")
 }
@@ -74,13 +81,10 @@ model UserProfile {
   status     BotStatus @default(PENDING)
   checkedAt  DateTime  @default(now())
   receivedAt DateTime  @default(now())
-  categoryId Int?
 
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
-  @@index([categoryId])
   @@map("user_profiles")
 }
 
@@ -100,16 +104,12 @@ model UserSession {
 }
 
 model Category {
-  id          Int       @id @default(autoincrement())
-  name        String    @unique
-  botToken    String?
-  botUsername String?
-  isActive    Boolean   @default(true)
-  startedAt   DateTime  @default(now())
-  expiresAt   DateTime?
-
-  userBots UserBot[]
-  profiles UserProfile[]
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  isActive    Boolean       @default(true)
+  startedAt   DateTime      @default(now())
+  UserBot     UserBot[]
+  PaymentPlan PaymentPlan[]
 
   @@map("categories")
 }
@@ -124,9 +124,10 @@ model UserBot {
   expiresAt  DateTime?
   status     BotStatus @default(PENDING)
 
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  category Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  payments Payment[]
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category    Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  payments    Payment[]
+  Transaction Transaction[]
 
   @@index([userId])
   @@index([categoryId])
@@ -134,13 +135,15 @@ model UserBot {
 }
 
 model PaymentPlan {
-  id        Int      @id @default(autoincrement())
-  userId    Int?
-  name      String
-  amount    Decimal
-  duration  Int
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  userId     Int?
+  name       String
+  amount     Decimal
+  duration   Int
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
 
   user     User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
   payments Payment[]
@@ -149,17 +152,17 @@ model PaymentPlan {
 }
 
 model Payment {
-  id             Int           @id @default(autoincrement())
+  id             Int            @id @default(autoincrement())
   userId         Int
   userBotId      Int
   planId         Int
   amount         Decimal
-  status         PaymentStatus @default(PENDING)
-  paymentGateway String        @db.VarChar(100)
-  transactionId  String        @unique @db.VarChar(255)
+  status         PaymentStatus  @default(PENDING)
+  paymentGateway PaymentGateway @default(CASH)
+  transactionId  String         @unique @db.VarChar(255)
   paidAt         DateTime?
   expiresAt      DateTime
-  createdAt      DateTime      @default(now())
+  createdAt      DateTime       @default(now())
   verifiedAt     DateTime?
 
   user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -203,4 +206,19 @@ model WebhookLog {
 
   @@index([paymentId])
   @@map("webhook_logs")
+}
+
+model Transaction {
+  id           String    @id @default(uuid())
+  pid          String    @unique
+  amount       Decimal
+  perform_time DateTime?
+  create_time  DateTime?
+  cancel_time  DateTime?
+  state        Int
+  reason       Int?
+  userId       Int?
+  user         User?     @relation(references: [id], fields: [userId], onDelete: SetNull)
+  userBotId    Int?
+  userBot      UserBot?  @relation(fields: [userBotId], references: [id], onDelete: SetNull)
 }

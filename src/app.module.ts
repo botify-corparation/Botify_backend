@@ -9,11 +9,14 @@ import { SeadersModule } from './modules/seaders/seaders.module';
 import { UsersModule } from './modules/users/users.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { ProofileModule } from './modules/proofile/proofile.module';
+import { CategoryModule } from './modules/category/category.module';
+import { PaymentPlanModule } from './modules/payment-plan/payment-plan.module';
+import { PaymentsModule } from './modules/payments/payments.module';
 
 @Module({
   imports: [CoreModule, ConfigModule.forRoot({
     isGlobal: true
-  }), MailesModule, AuthModule, CommonModule, SeadersModule, UsersModule, UploadModule, ProofileModule],
+  }), MailesModule, AuthModule, CommonModule, SeadersModule, UsersModule, UploadModule, ProofileModule, CategoryModule, PaymentPlanModule, PaymentsModule],
   controllers: [],
   providers: [],
 })

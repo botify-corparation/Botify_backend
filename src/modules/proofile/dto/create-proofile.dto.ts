@@ -24,8 +24,4 @@ export class CreateProfileDto {
   @IsDateString()
   receivedAt?: string;
 
-  @ApiPropertyOptional({ description: 'Kategoriya ID', example: 2 })
-  @IsOptional()
-  @IsInt()
-  categoryId?: number;
 }

@@ -123,7 +123,6 @@ export class UsersService {
               select: {
                 id: true,
                 name: true,
-                botUsername: true,
               }
             }
           }

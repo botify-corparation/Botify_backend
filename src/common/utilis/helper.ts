@@ -1,8 +1,10 @@
+import { User } from "@prisma/client";
+
 export function generateOTP(): string {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+  return Math.floor(100000 + Math.random() * 900000).toString();
 }
 export function generateHtml(otpCode: number): string {
-    return `
+  return `
       <div style="max-width: 500px; margin: auto; padding: 25px; border-radius: 8px; background-color: #ffffff; font-family: Arial, sans-serif; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); border: 1px solid #eee;">
         <div style="text-align: center;">
           <img src="https://i.imgur.com/QkG8OVG.png" alt="Botify Logo" style="width: 80px; margin-bottom: 10px;" />
@@ -23,3 +25,5 @@ export function generateHtml(otpCode: number): string {
       </div>
     `;
 }
+
+
