@@ -40,7 +40,9 @@ export class CategoryController {
     return this.categoryService.create(createCategoryDto);
   }
 
+
   
+
   @Get('getAll')
   @ApiOperation({ summary: 'Get all categories' })
   @ApiResponse({ status: 200, description: 'List of all categories' })
