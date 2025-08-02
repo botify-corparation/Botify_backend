@@ -168,7 +168,8 @@ export class UsersService {
     })
     const existingUsers = await this.prisma.user.findUnique({ where: { email: payload.email } })
     if (!existsUser) throw new NotFoundException('user not found!')
-    if (existingUsers) throw new ConflictException('this email already exist')
+    if (existingUsers || existsUser.phone === payload.phone) throw new ConflictException('this email already exist')
+
     const updateUser = await this.prisma.user.update({
       where: { id: userId },
       data: {
