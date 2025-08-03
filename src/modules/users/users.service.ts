@@ -152,16 +152,22 @@ export class UsersService {
         profile: {
           select: {
             status: true,
-            isActive: true
-          }
-        }
-      }
+            isActive: true,
+          },
+        },
+        OAuthAccount: true,
+      },
     });
 
     if (!me) throw new NotFoundException('User topilmadi');
 
-    return { data: me };
+    return {
+      success: true,
+      message: 'User profile retrieved successfully',
+      data: me,
+    };
   }
+
   async updateUser(userId: number, payload: UpdateUserDto) {
     const existsUser = await this.prisma.user.findUnique({
       where: { id: userId }
