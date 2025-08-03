@@ -212,7 +212,7 @@ export class AuthService {
       sessionId: session.id,
     });
 
-    const { password:_, ...safeUser } = user;
+    const { password: _, ...safeUser } = user;
 
     return {
       message: 'Login successful',
