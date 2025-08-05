@@ -119,13 +119,12 @@ model Category {
 }
 
 model BotModel {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String   @db.Text
-  previewUrl  String?
-  imageUrl    String?
-  categoryId  Int
-  createdAt   DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  previewUrl String?
+  imageUrl   String?
+  categoryId Int
+  createdAt  DateTime @default(now())
 
   category Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   userBots UserBot[]
@@ -290,4 +289,14 @@ model Rating {
 
   @@unique([userId, userBotId])
   @@map("ratings")
+}
+
+model BadWord {
+  id        Int      @id @default(autoincrement())
+  uzbek     String
+  russian   String
+  english   String
+  createdAt DateTime @default(now())
+
+  @@map("bad_words")
 }

@@ -15,11 +15,12 @@ import { PaymentsModule } from './modules/payments/payments.module';
 import { FavoritesModule } from './modules/favorites/favorites.module';
 import { CommentsModule } from './modules/comments/comments.module';
 import { RatingModule } from './modules/rating/rating.module';
+import { ControlerBotModule } from './modules/controler-bot/controler-bot.module';
 
 @Module({
   imports: [CoreModule, ConfigModule.forRoot({
     isGlobal: true
-  }), MailesModule, AuthModule, CommonModule, SeadersModule, UsersModule, UploadModule, ProofileModule, CategoryModule, PaymentPlanModule, PaymentsModule, FavoritesModule, CommentsModule, RatingModule],
+  }), MailesModule, AuthModule, CommonModule, SeadersModule, UsersModule, UploadModule, ProofileModule, CategoryModule, PaymentPlanModule, PaymentsModule, FavoritesModule, CommentsModule, RatingModule, ControlerBotModule],
   controllers: [],
   providers: [],
 })
