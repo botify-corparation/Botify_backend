@@ -16,13 +16,13 @@ import { ApiBearerAuth, ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@ne
 @ApiBearerAuth()
 @Controller('controler-bot')
 export class ControlerBotController {
-  constructor(private readonly controlerBotService: ControlerBotService) {}
+  constructor(private readonly controlerBotService: ControlerBotService) { }
 
   @UseGuards(GuardsService, RoleGuard)
   @Post('start')
   @ApiOperation({ summary: 'Observer botni ishga tushirish (params orqali)' })
-  @ApiQuery({ name: 'token', required: true, type: String,example:{name:'Nazoratchi Bot'} })
-  @ApiQuery({ name: 'name', required: true, type: String })
+  @ApiQuery({ name: 'token', required: true, type: String })
+  @ApiQuery({ name: 'name', required: true, type: String, example:'Nazoratchi bot' })
   @ApiQuery({ name: 'categoryId', required: true, type: Number })
   @ApiResponse({ status: 201, description: 'Bot started successfully' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
