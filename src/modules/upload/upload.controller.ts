@@ -62,4 +62,38 @@ export class UploadController {
         const userId = req.user['id'];
         return this.uploadService.uploadToImgbb(file.path, userId);
     }
+    @UseGuards(GuardsService, RoleGuard)
+    @Post('updateImg-botModel')
+    @UseInterceptors(
+        FileInterceptor('file', {
+            storage: diskStorage({
+                destination: './uploads',
+                filename: (req, file, cb) => {
+                    const filename = uuidv4() + extname(file.originalname);
+                    cb(null, filename);
+                },
+            }),
+        }),
+    )
+    @ApiOperation({ summary: 'Fayl yuklash va img ga jonatish' })
+    @ApiConsumes('multipart/form-data')
+    @ApiBody({
+        schema: {
+            type: 'object',
+            properties: {
+                file: {
+                    type: 'string',
+                    format: 'binary',
+                },
+            },
+        },
+    })
+    @ApiResponse({ status: 201, description: 'Fayl muvaffaqiyatli yuklandi' })
+    async uploadIMgBotBodule(
+        @UploadedFile() file: Express.Multer.File,
+        @Req() req,
+    ) {
+        const userId = req.user['id'];
+        return this.uploadService.uploadToImg(file.path, userId);
+    }
 }

@@ -121,7 +121,6 @@ model Category {
 model BotModel {
   id         Int      @id @default(autoincrement())
   name       String   @unique
-  previewUrl String?
   imageUrl   String?
   categoryId Int
   createdAt  DateTime @default(now())

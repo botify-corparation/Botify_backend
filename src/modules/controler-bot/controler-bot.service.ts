@@ -9,7 +9,7 @@ export class ControlerBotService {
     private prisma: PrismaService
   ) { }
 
-  async sendTokenToBotService(token: string, name: string, userId: number, categoryId: number) {
+  async sendTokenToBotService(token: string, name: string, userId: number) {
     const botName = name.toLowerCase().trim()
     const existsName = await this.prisma.botModel.findUnique({ where: { name: name } })
     if (!existsName) throw new NotFoundException('this name not found!')
@@ -25,7 +25,7 @@ export class ControlerBotService {
     const creatUserBot = await this.prisma.userBot.create({
       data: {
         botToken: token,
-        categoryId: categoryId,
+        categoryId: existsName.categoryId,
         userId,
         botModelId: existsName.id,
         isActive: true,

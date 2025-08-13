@@ -211,7 +211,7 @@ export class AuthService {
       agent: session.userAgent,
       sessionId: session.id,
     });
-
+        
     const { password: _, ...safeUser } = user;
 
     return {

@@ -29,7 +29,7 @@ async function bootstrap() {
     allowedHeaders: 'Content-Type, Accept, Authorization',
   });
   
-  await app.listen(process.env.PORT ?? 3000);
-  console.log('Swagger hujjatlari: http://localhost:3000/docs');
+  await app.listen(process.env.PORT ?? 1709);
+  console.log('Swagger hujjatlari: http://localhost:1709/docs');
 }
 bootstrap();

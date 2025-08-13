@@ -23,19 +23,17 @@ export class ControlerBotController {
   @ApiOperation({ summary: 'Observer botni ishga tushirish (params orqali)' })
   @ApiQuery({ name: 'token', required: true, type: String })
   @ApiQuery({ name: 'name', required: true, type: String, example:'Nazoratchi bot' })
-  @ApiQuery({ name: 'categoryId', required: true, type: Number })
   @ApiResponse({ status: 201, description: 'Bot started successfully' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async startBot(
     @Req() req: Request,
     @Query('token') token: string,
     @Query('name') name: string,
-    @Query('categoryId') categoryId: string
   ) {
     const userId = req['user'].id;
 
-    if (!token || !name || !categoryId) {
-      throw new BadRequestException('token, name, categoryId required');
+    if (!token || !name) {
+      throw new BadRequestException('token, name required');
     }
 
     if (!userId) {
@@ -46,7 +44,6 @@ export class ControlerBotController {
       token,
       name,
       userId,
-      Number(categoryId),
     );
 
     return { success: true, message: 'Bot started successfully' };

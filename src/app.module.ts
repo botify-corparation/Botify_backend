@@ -16,11 +16,13 @@ import { FavoritesModule } from './modules/favorites/favorites.module';
 import { CommentsModule } from './modules/comments/comments.module';
 import { RatingModule } from './modules/rating/rating.module';
 import { ControlerBotModule } from './modules/controler-bot/controler-bot.module';
+import { ShazamBotModule } from './modules/shazam-bot/shazam-bot.module';
+import { BotModulesModule } from './modules/bot-modules/bot-modules.module';
 
 @Module({
   imports: [CoreModule, ConfigModule.forRoot({
     isGlobal: true
-  }), MailesModule, AuthModule, CommonModule, SeadersModule, UsersModule, UploadModule, ProofileModule, CategoryModule, PaymentPlanModule, PaymentsModule, FavoritesModule, CommentsModule, RatingModule, ControlerBotModule],
+  }), MailesModule, AuthModule, CommonModule, SeadersModule, UsersModule, UploadModule, ProofileModule, CategoryModule, PaymentPlanModule, PaymentsModule, FavoritesModule, CommentsModule, RatingModule, ControlerBotModule, ShazamBotModule, BotModulesModule],
   controllers: [],
   providers: [],
 })
