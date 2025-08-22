@@ -14,6 +14,10 @@ async function bootstrap() {
       },
     }),
   );
+  app.enableCors({
+    origin: true,
+    allowedHeaders: true,
+  });
   const config = new DocumentBuilder()
     .setTitle('Botify API hujjatlari')
     .setDescription('Bu yerda barcha Auth, Email yuborish, va boshqa xizmatlar bo‘yicha API hujjatlari keltirilgan.')
@@ -28,7 +32,7 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Accept, Authorization',
   });
-  
+
   await app.listen(process.env.PORT ?? 1709);
   console.log('Swagger hujjatlari: http://localhost:1709/docs');
 }

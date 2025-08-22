@@ -18,11 +18,12 @@ import { RatingModule } from './modules/rating/rating.module';
 import { ControlerBotModule } from './modules/controler-bot/controler-bot.module';
 import { ShazamBotModule } from './modules/shazam-bot/shazam-bot.module';
 import { BotModulesModule } from './modules/bot-modules/bot-modules.module';
+import { CourseSallerModule } from './modules/course-saller/course-saller.module';
 
 @Module({
   imports: [CoreModule, ConfigModule.forRoot({
     isGlobal: true
-  }), MailesModule, AuthModule, CommonModule, SeadersModule, UsersModule, UploadModule, ProofileModule, CategoryModule, PaymentPlanModule, PaymentsModule, FavoritesModule, CommentsModule, RatingModule, ControlerBotModule, ShazamBotModule, BotModulesModule],
+  }), MailesModule, AuthModule, CommonModule, SeadersModule, UsersModule, UploadModule, ProofileModule, CategoryModule, PaymentPlanModule, PaymentsModule, FavoritesModule, CommentsModule, RatingModule, ControlerBotModule, ShazamBotModule, BotModulesModule, CourseSallerModule],
   controllers: [],
   providers: [],
 })
