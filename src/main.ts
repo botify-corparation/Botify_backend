@@ -15,8 +15,9 @@ async function bootstrap() {
     }),
   );
   app.enableCors({
-    origin: true,
-    allowedHeaders: true,
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
   });
   const config = new DocumentBuilder()
     .setTitle('Botify API hujjatlari')
@@ -27,11 +28,6 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
-  app.enableCors({
-    origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type, Accept, Authorization',
-  });
 
   await app.listen(process.env.PORT ?? 1709);
   console.log('Swagger hujjatlari: http://localhost:1709/docs');
