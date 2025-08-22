@@ -59,6 +59,7 @@ model User {
   Favorite     Favorite[]
   Comment      Comment[]
   Rating       Rating[]
+  Order        Order[]
 
   @@map("users")
 }
@@ -298,4 +299,95 @@ model BadWord {
   createdAt DateTime @default(now())
 
   @@map("bad_words")
+}
+
+model telegramUser {
+  id          BigInt   @id @default(autoincrement())
+  telegramId  BigInt   @unique
+  fullName    String
+  username    String?  @unique
+  phoneNumber String?  @db.VarChar(20)
+  email       String?  @unique
+  role        Role     @default(USER)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  orders      Order[]
+  userCourses UserCourse[]
+  Course      Course[]
+}
+
+model Course {
+  id          BigInt       @id @default(autoincrement())
+  title       String
+  description String?
+  price       Decimal      @db.Decimal(10, 2)
+  currency    String       @db.VarChar(10)
+  duration    String?      @db.VarChar(50)
+  status      CourseStatus @default(ACTIVE)
+  isFree      Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  orders      Order[]
+  userCourses UserCourse[]
+  videos      Video[]
+
+  createdById BigInt
+  createdBy   telegramUser @relation(fields: [createdById], references: [id])
+}
+
+model Order {
+  id             BigInt      @id @default(autoincrement())
+  telegramUserId BigInt
+  courseId       BigInt
+  amount         Decimal     @db.Decimal(10, 2)
+  currency       String      @db.VarChar(10)
+  status         OrderStatus @default(PENDING) // PENDING, PAID, CANCELLED
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  telegramUser telegramUser @relation(fields: [telegramUserId], references: [id])
+  course       Course       @relation(fields: [courseId], references: [id])
+  User         User?        @relation(fields: [userId], references: [id])
+  userId       Int?
+}
+
+model UserCourse {
+  id             BigInt    @id @default(autoincrement())
+  telegramUserId BigInt
+  courseId       BigInt
+  startDate      DateTime  @default(now())
+  endDate        DateTime?
+  progress       Int       @default(0)
+  isApproved     Boolean   @default(false) // 🔥 yangi maydon
+
+  course       Course        @relation(fields: [courseId], references: [id])
+  telegramUser telegramUser? @relation(fields: [telegramUserId], references: [id])
+}
+
+model Video {
+  id        BigInt   @id @default(autoincrement())
+  courseId  BigInt
+  title     String
+  url       String
+  createdAt DateTime @default(now())
+
+  course Course @relation(fields: [courseId], references: [id])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum CourseStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELLED
 }
