@@ -31,7 +31,6 @@ export class MailesController {
     })
     @ApiResponse({ status: 400, description: 'Yuborishda xatolik yuz berdi.' })
     async verifyEmail(@Body() body: { email: string; otp: string }) {
-        return await this.mailseService.verifyOtp(body.email, body.an
-        otp);
+        return await this.mailseService.verifyOtp(body.email, body.otp);
     }
 }
