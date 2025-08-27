@@ -121,19 +121,13 @@ export class AuthService {
   }
 
   async register(payload: RegisterAuthDto, userAgent: string, ipAddress: string) {
-    const { email, fullName, password, phone, otp } = payload;
+    const { email, fullName, password, phone } = payload;
 
     const existingUser = await this.prisma.user.findUnique({ where: { email } });
 
     if (existingUser) {
       throw new ConflictException('User with this email already exists');
     }
-
-    const existOtp = await this.redisService.get(`otp:${email}`);
-    if (!existOtp || existOtp !== otp) {
-      throw new ConflictException('Invalid or expired OTP code');
-    }
-
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await this.prisma.user.create({
       data: {
@@ -211,7 +205,7 @@ export class AuthService {
       agent: session.userAgent,
       sessionId: session.id,
     });
-        
+
     const { password: _, ...safeUser } = user;
 
     return {

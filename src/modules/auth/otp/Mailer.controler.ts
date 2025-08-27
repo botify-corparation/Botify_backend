@@ -16,4 +16,21 @@ export class MailesController {
     async sentEmail(@Body() payload: SendMailDto) {
         return await this.mailseService.sendToEmailOtpCode(payload);
     }
+    @Post('verify')
+    @ApiOperation({ summary: 'Emailga OTP kod tasdiqlash', description: 'Foydalanuvchining email manziliga yuborilgan 6 xonali tasdiqlash kodi tasdiqlanadi.' })
+    @ApiBody({
+        schema: {
+            type: 'object',
+            properties: {
+                email: { type: 'string', example: 'test@example.com' },
+                otp: { type: 'string', example: '123456' }
+            },
+            required: ['email', 'otp']
+
+        }
+    })
+    @ApiResponse({ status: 400, description: 'Yuborishda xatolik yuz berdi.' })
+    async verifyEmail(@Body() body: { email: string; otp: string }) {
+        return await this.mailseService.verifyOtp(body.email, body.otp);
+    }
 }

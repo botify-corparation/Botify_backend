@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { SendMailDto } from '../dto/sendToEmail';
 import { RedisService } from 'src/core/config/redis/redis.service';
@@ -31,11 +31,34 @@ export class MailesService {
         await this.sendOtp(email, otp);
 
         await this.redisService.set(`otp:${email}`, otp, 60 * 60);
+        console.log(await this.redisService.get(`otp:${email}`));
 
         return {
             success: true,
             message: 'OTP code was sent to email and saved in Redis.',
         };
     }
+    async verifyOtp(email: string, otp: string) {
+        console.log(email);
+
+        const storedOtp = await this.redisService.get(`otp:${email}`);
+        console.log(storedOtp);
+
+        if (!storedOtp) {
+            throw new NotFoundException('OTP not found or expired');
+        }
+
+        if (storedOtp !== otp) {
+            throw new BadRequestException('Invalid OTP');
+        }
+
+        await this.redisService.delete(`otp:${email}`);
+        return {
+            success: true,
+            message: 'OTP verified successfully',
+        };
+    }
+
+
 
 }

@@ -42,11 +42,4 @@ export class RegisterAuthDto {
     @IsNotEmpty({ message: 'Parol majburiy' })
     @Length(6, 32, { message: 'Parol 6 dan 32 belgigacha bolishi kerak' })
     password: string;
-
-    @ApiProperty({
-        example: '123456',
-        description: 'Elektron pochtaga yuborilgan 6 xonali tasdiqlash kodi',
-    })
-    @IsString()
-    otp: string;
 }
