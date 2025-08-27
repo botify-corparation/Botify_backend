@@ -99,30 +99,13 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Foydalanuvchi o‘z profilini tahrirlash' })
   @ApiBody({
-    schema: {
-      properties: {
-        fullName: { type: 'string', example: 'Ali Valiyev' },
-        phone: { type: 'string', example: '+998901234567' },
-        email: { type: 'string', example: 'ali.valiyev@example.com' },
-        isActive: { type: 'boolean', example: true },
-        avatar: { type: 'string', format: 'binary', description: 'Foydalanuvchi avatari' }
-      },
-    }
+    type: UpdateUserDto
   })
-  @UseInterceptors(FileInterceptor('avatar', {
-    storage: diskStorage({
-      destination: './uploads/avatars',
-      filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + '-' + file.originalname);
-      }
 
-    })
-  }))
   @ApiResponse({ status: 200, description: 'Foydalanuvchi yangilandi' })
-  async updateMe(@Req() req, @Body() payload: UpdateUserDto, @UploadedFile() avatar?: Express.Multer.File) {
+  async updateMe(@Req() req, @Body() payload: UpdateUserDto) {
     const userId = req.user.id;
-    return this.usersService.updateUser(userId, payload, avatar?.filename);
+    return this.usersService.updateUser(userId, payload,);
   }
 
 

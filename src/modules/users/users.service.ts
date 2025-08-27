@@ -168,7 +168,7 @@ export class UsersService {
     };
   }
 
-  async updateUser(userId: number, payload: UpdateUserDto, avatar?: string) {
+  async updateUser(userId: number, payload: UpdateUserDto) {
     const existsUser = await this.prisma.user.findUnique({
       where: { id: userId }
     })
@@ -183,7 +183,7 @@ export class UsersService {
         fullName: payload.fullName,
         isActive: payload.isActive,
         phone: payload.phone,
-        avatar
+
       }
     })
     const { password, ...safeUser } = updateUser
