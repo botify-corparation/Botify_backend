@@ -15,10 +15,9 @@ async function bootstrap() {
     }),
   );
   app.enableCors({
-    origin: 'http://localhost:5173',
+    origin: true,
     credentials: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
+
   });
   const config = new DocumentBuilder()
     .setTitle('Botify API hujjatlari')
