@@ -9,6 +9,8 @@ import {
   Post,
   UseGuards,
   Delete,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -28,6 +30,8 @@ import { RoleGuard } from 'src/common/role/role.service';
 import { Request } from 'express';
 import { roles } from 'src/common/role/role.decorator';
 import { CreateAdminDto } from './dto/create-user.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 
 @ApiTags('Users')
 @Controller('users')
@@ -94,11 +98,31 @@ export class UsersController {
   @Patch('me')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Foydalanuvchi o‘z profilini tahrirlash' })
-  @ApiBody({ type: UpdateUserDto })
+  @ApiBody({
+    schema: {
+      properties: {
+        fullName: { type: 'string', example: 'Ali Valiyev' },
+        phone: { type: 'string', example: '+998901234567' },
+        email: { type: 'string', example: 'ali.valiyev@example.com' },
+        isActive: { type: 'boolean', example: true },
+        avatar: { type: 'string', format: 'binary', description: 'Foydalanuvchi avatari' }
+      },
+    }
+  })
+  @UseInterceptors(FileInterceptor('avatar', {
+    storage: diskStorage({
+      destination: './uploads/avatars',
+      filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + '-' + file.originalname);
+      }
+
+    })
+  }))
   @ApiResponse({ status: 200, description: 'Foydalanuvchi yangilandi' })
-  async updateMe(@Req() req, @Body() payload: UpdateUserDto) {
+  async updateMe(@Req() req, @Body() payload: UpdateUserDto, @UploadedFile() avatar?: Express.Multer.File) {
     const userId = req.user.id;
-    return this.usersService.updateUser(userId, payload);
+    return this.usersService.updateUser(userId, payload, avatar?.filename);
   }
 
 
