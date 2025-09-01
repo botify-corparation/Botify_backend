@@ -7,7 +7,9 @@ import { PrismaService } from 'src/core/config/prisma/prisma.service';
 export class CourseSallerService {
     constructor(@Inject('BOT_SERVICE') private readonly botClient: ClientProxy, private prisma: PrismaService) { }
 
-    async sendTokenToBotService(token: string, name: string, userId: number) {
+    async sendTokenToBotService(token: string, name: string, userId: number, chatId: number) {
+
+
         const botName = name.toLowerCase().trim()
         const existsName = await this.prisma.botModel.findUnique({ where: { name: name } })
         if (!existsName) throw new NotFoundException('this name not found!')
@@ -42,6 +44,6 @@ export class CourseSallerService {
                 isActive: true,
             }
         })
-        this.botClient.emit('start_course_saller_bot', { token, userId, });
+        this.botClient.emit('start_course_saller_bot', { token, userId, chatId });
     }
 }

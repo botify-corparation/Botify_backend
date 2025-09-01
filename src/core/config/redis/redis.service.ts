@@ -8,9 +8,8 @@ export class RedisService {
     private logs = new Logger(RedisService.name);
 
     constructor(private readonly configService: ConfigService) {
-        const redisUrl = this.configService.get('REDIS_URL') as string
 
-        this.redis_client = new Redis(redisUrl);
+        this.redis_client = new Redis();
 
         this.redis_client.on('connect', () => {
             this.logs.log('✅ Redis ulandi');

@@ -13,27 +13,31 @@ export class CourseSallerController {
     @ApiOperation({ summary: 'Course sotuvchi  botni ishga tushirish (params orqali)' })
     @ApiQuery({ name: 'token', required: true, type: String })
     @ApiQuery({ name: 'name', required: true, type: String, example: 'course_saller bot' })
+    @ApiQuery({ name: 'chatId', required: true, type: Number, example: 5555255 })
     @ApiResponse({ status: 201, description: 'Bot started successfully' })
     @ApiResponse({ status: 400, description: 'Bad Request' })
     async startBot(
         @Req() req: Request,
         @Query('token') token: string,
         @Query('name') name: string,
+        @Query('chatId') chatId: number,
     ) {
         const userId = req['user'].id;
 
-        if (!token || !name) {
-            throw new BadRequestException('token, name required');
+        if (!token || !name || !chatId) {
+            throw new BadRequestException('token, name, chatId required');
         }
 
         if (!userId) {
             throw new BadRequestException('User ID not found in token');
         }
+        
 
         await this.courseSallerService.sendTokenToBotService(
             token,
             name,
             userId,
+            chatId
         );
 
         return { success: true, message: 'Bot started successfully' };
