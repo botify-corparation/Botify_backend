@@ -1,17 +1,18 @@
 FROM node:22-alpine
 
-WORKDIR /app 
+WORKDIR /app
 
 COPY package*.json ./
-
 RUN npm install
 
-COPY . . 
+COPY . .
 
-# RUN npx prisma generate
+# Prisma client generatsiya qilish (DATABASE_URL talab qilmaydi)
+RUN npx prisma generate
 
+# NestJS build
 RUN npm run build
 
 EXPOSE 1709
 
-CMD ["npm","run","start:prod"]
+CMD ["npm", "run", "start:prod"]
