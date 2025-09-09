@@ -3,12 +3,12 @@ version: "3.9"
 services:
   db:
     image: postgres:15
-    container_name: edora_postgres
+    container_name: botify_postgres
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 2008
-      POSTGRES_DB: edora_db
+      POSTGRES_DB: botify_db
     ports:
       - "5432:5432"
     volumes:
@@ -16,14 +16,14 @@ services:
 
   redis:
     image: redis:7
-    container_name: edora_redis
+    container_name: botify_redis
     restart: always
     ports:
       - "6379:6379"
 
   app:
     build: .
-    container_name: edora_app
+    container_name: botify_app
     restart: always
     env_file:
       - .env
@@ -39,7 +39,7 @@ services:
         npm run start:prod
       "
     environment:
-      DATABASE_URL: postgres://postgres:2008@db:5432/edora_db
+      DATABASE_URL: postgres://postgres:2008@db:5432/botify_db
       REDIS_HOST: redis
       REDIS_PORT: 6379
 
