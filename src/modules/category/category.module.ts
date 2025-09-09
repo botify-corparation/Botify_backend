@@ -3,9 +3,10 @@ import { CategoryService } from './category.service';
 import { CategoryController } from './category.controller';
 import { PrismaModule } from 'src/core/config/prisma/prisma.module';
 import { JwtModule } from '@nestjs/jwt';
+import { UploadModule } from '../upload/upload.module';
 
 @Module({
-  imports: [PrismaModule, JwtModule],
+  imports: [PrismaModule, JwtModule, UploadModule],
   controllers: [CategoryController],
   providers: [CategoryService],
 })

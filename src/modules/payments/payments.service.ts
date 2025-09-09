@@ -84,7 +84,6 @@ export class PaymentsService {
 
       }
     })
-    if (allPaymentHistory.length === 0) throw new NotFoundException('paymen history empty')
     return {
       success: true,
       data: allPaymentHistory
@@ -135,7 +134,7 @@ export class PaymentsService {
 
       }
     })
-    if (!onePaymentHistory) throw new NotFoundException('paymen history empty')
+    if (!onePaymentHistory) throw new NotFoundException('payment history empty')
     return {
       success: true,
       data: onePaymentHistory

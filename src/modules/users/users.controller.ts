@@ -108,6 +108,22 @@ export class UsersController {
     return this.usersService.updateUser(userId, payload,);
   }
 
+  @UseGuards(GuardsService, RoleGuard)
+  @roles('ADMIN')
+  @Patch(':id')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Admin boshqa foydalanuvchini yangilaydi (ID orqali)' })
+  @ApiParam({ name: 'id', type: Number, description: 'User ID' })
+  @ApiBody({ type: UpdateUserDto })
+  @ApiResponse({ status: 200, description: 'Foydalanuvchi yangilandi' })
+  @ApiResponse({ status: 404, description: 'Foydalanuvchi topilmadi' })
+  async updateUserForAdmin(
+    @Param('id') id: string,
+    @Body() payload: UpdateUserDto,
+  ) {
+    return this.usersService.updateUserForAdmin(+id, payload);
+  }
+
 
   @UseGuards(GuardsService, RoleGuard)
   @Post('reset-password')

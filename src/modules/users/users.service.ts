@@ -192,6 +192,30 @@ export class UsersService {
     }
 
   }
+  async updateUserForAdmin(id: number, payload: UpdateUserDto) {
+    const existsUser = await this.prisma.user.findUnique({
+      where: { id: id }
+    })
+    const existingUsers = await this.prisma.user.findUnique({ where: { email: payload.email } })
+    if (!existsUser) throw new NotFoundException('user not found!')
+    if (existingUsers || existsUser.phone === payload.phone) throw new ConflictException('this email already exist')
+
+    const updateUser = await this.prisma.user.update({
+      where: { id: id },
+      data: {
+        email: payload.email,
+        fullName: payload.fullName,
+        isActive: payload.isActive,
+        phone: payload.phone,
+
+      }
+    })
+    const { password, ...safeUser } = updateUser
+    return {
+      data: safeUser
+    }
+
+  }
   async resetPassword(payload: ResetPasswordDto, userId: number) {
 
     const checkPassword = await this.prisma.user.findUnique({ where: { id: userId } })

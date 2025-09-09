@@ -2,18 +2,22 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PrismaService } from 'src/core/config/prisma/prisma.service';
+import { UploadService } from '../upload/upload.service';
 
 @Injectable()
 export class CategoryService {
-  constructor(private prisma: PrismaService) { }
-  async create(createCategoryDto: CreateCategoryDto) {
+  constructor(private prisma: PrismaService, private uploadService: UploadService) { }
+  async create(createCategoryDto: CreateCategoryDto, categoryImageUrl: string) {
     const existsName = await this.prisma.category.findUnique({ where: { name: createCategoryDto.name } })
     if (existsName) throw new ConflictException('this category already exists')
 
+    if (!categoryImageUrl) throw new NotFoundException('category image is required')
+    const imageUrl = await this.uploadService.uploadImageBase64(categoryImageUrl)
     const createCategory = await this.prisma.category.create({
       data: {
         name: createCategoryDto.name,
         isActive: createCategoryDto.isActive,
+        imageUrl
       }
     })
     return {
@@ -42,12 +46,28 @@ export class CategoryService {
     }
   }
 
-  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+  async update(id: number, updateCategoryDto: UpdateCategoryDto, categoryImageUrl?: string) {
     const existsCategory = await this.prisma.category.findUnique({ where: { id } })
     if (!existsCategory) throw new NotFoundException('this category not found!')
 
-    if (existsCategory.name === updateCategoryDto.name) throw new ConflictException('this category already exists!')
+    const existsName = await this.prisma.category.findUnique({ where: { name: updateCategoryDto.name } })
+    if (existsName) throw new ConflictException('this category already exists!')
 
+    if (categoryImageUrl) {
+      const imageUrl = await this.uploadService.uploadImageBase64(categoryImageUrl)
+      const updated = await this.prisma.category.update({
+        where: { id },
+        data: {
+          name: updateCategoryDto.name,
+          isActive: updateCategoryDto.isActive,
+          imageUrl
+        }
+      })
+      return {
+        success: true,
+        data: updated
+      }
+    }
     const updated = await this.prisma.category.update({
       where: { id },
       data: {

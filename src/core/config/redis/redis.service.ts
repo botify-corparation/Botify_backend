@@ -9,7 +9,10 @@ export class RedisService {
 
     constructor(private readonly configService: ConfigService) {
 
-        this.redis_client = new Redis();
+        this.redis_client = new Redis({
+            host: this.configService.get<string>('REDIS_HOST'),
+            port: this.configService.get<number>('REDIS_PORT'),
+        });
 
         this.redis_client.on('connect', () => {
             this.logs.log('✅ Redis ulandi');
