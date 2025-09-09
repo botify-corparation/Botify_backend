@@ -22,7 +22,7 @@ jobs:
           script: |
             echo "Creating project folder if it doesn't exist!"
 
-            if [ ! -d "edora_backend/.git" ]; then
+            if [ ! -d "Botify_backend/.git" ]; then
               echo "Cloning repository!" 
               git clone https://github.com/botify-corparation/Botify_backend.git
             fi
@@ -47,4 +47,3 @@ jobs:
 
 
 
-            
