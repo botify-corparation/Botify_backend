@@ -1,34 +1,17 @@
-# =========================
-# 🔹 1-bosqich: Builder
-# =========================
-FROM node:22-alpine AS builder
+FROM node:22-alpine
 
-WORKDIR /app
+WORKDIR /app 
 
 COPY package*.json ./
 
-RUN npm ci
+RUN npm install
 
-COPY prisma ./prisma
-COPY . .
+COPY . . 
 
 RUN npx prisma generate
+
 RUN npm run build
-
-# =========================
-# 🔸 2-bosqich: Runtime
-# =========================
-FROM node:22-alpine
-
-WORKDIR /app
-
-COPY package*.json package-lock.json ./
-RUN npm ci --omit=dev
-
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 EXPOSE 1709
 
-CMD ["node", "dist/main"]
+CMD ["npm","run","start:prod"]
